@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Definitions</title>
+    <link rel="shortcut icon" href="#">
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            background-color: white;
+        }
+
+        body {
+            width: 100%;
+            height: 40rem;
+            background-color: black;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .word-input-container {
+            display: flex;
+            border: 1px solid white;
+            width: 20rem;
+            height: 2.25rem;
+            margin-top: 2.5rem;
+        }
+
+        .word-input-title {
+            height: 100%;
+            width: 15rem;
+            border: 1px solid white;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .word-output {
+            width: 100%;
+            height: 100%;
+        }
+
+        .submit {
+            width: 20rem;
+            height: 2.25rem;
+            border: 1px solid white;
+            background-color: rgb(3, 51, 124);
+            color: rgb(204, 198, 198);
+            border: 2px solid rgb(75, 74, 74);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 900;
+        }
+
+        .returned-definition-container {
+            width: 20rem;
+            height: 25rem;
+            border: 1px solid blue;
+            background-color: white;
+            margin-top: 2.5rem;
+        }
+
+        .word-title {
+            color: black;
+            font-size: 2rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .word-origin,
+        .word-definition {
+            margin: 2rem 1rem 0 1rem;
+            font-weight: 900;
+        }
+
+        .origin-text,
+        .definition-text {
+            font-weight: 100;
+        }
+
+    </style>
+</head>
+<body>
+    
+    <div class="word-input-container">
+        <div class="word-input-title">Input Word</div>
+        <input class="word-output" type="text"></input>
+    </div>
+    <div class="submit">SUBMIT</div>
+
+    <div class="returned-definition-container">
+
+        <h1 class="word-title"></h1>
+
+        <p class="word-origin">origin:<span class="origin-text"></span></p>
+
+        <p class="word-definition">definition:<span class="definition-text"></span></p>
+    
+    </div>
+
+
+    <script>
+            document.querySelector('.submit').addEventListener("click", function() {
+                async function getWord() {
+                    let requestURL = `https://api.dictionaryapi.dev/api/v2/entries/en/`
+                    let word = document.querySelector('.word-output').value;
+                        requestURL = requestURL + word;
+                        console.log('requestURL: ', requestURL);
+
+                        async function getDefinitionJson() {
+                            let request = new XMLHttpRequest();
+                            await request.open(`GET`, requestURL);
+                                request.responseType = 'json';
+                            await request.send();
+                            request.onload = async function() {
+                                const definition = await request.response;
+                                loadDefinition(definition);
+                            }                        
+                        }
+                        getDefinitionJson();
+                }
+                getWord();
+            })
+
+            function loadDefinition(definition) {
+                const word = definition[0].word
+                const origin = definition[0].origin;
+                const word_definition = definition[0].meanings[0].definitions[0].definition;
+                    console.log(word_definition);
+                
+                document.querySelector('.word-title').textContent = word;
+                document.querySelector('.origin-text').textContent = '  ' + origin;
+                document.querySelector('.definition-text').textContent = "  " + word_definition;
+            }
+
+    </script>
+</body>
+</html>
