@@ -69,25 +69,33 @@
             border: 1px solid blue;
             background-color: white;
             margin-top: 2.5rem;
+            overflow: scroll;
+
         }
 
         .word-title {
-            color: black;
-            font-size: 2rem;
+            margin: 1.5rem 1rem 0 1rem;
             text-align: center;
-            margin-top: 1rem;
         }
 
-        .word-origin,
-        .word-definition {
-            margin: 2rem 1rem 0 1rem;
+        .origin-para {
             font-weight: 900;
+            margin: 1.5rem 1rem 0 1rem;
         }
 
-        .origin-text,
-        .definition-text {
-            font-weight: 100;
+        .origin-information {
+            margin: 1.5rem 1rem 0 1rem;
         }
+
+        .bold-para {
+            font-weight: 900;
+            margin: 1.5rem 1rem 0 1rem;
+        }
+
+        .para-paragraph {
+            margin: 1.5rem 1rem 0 1rem;
+        }
+
 
     </style>
 </head>
@@ -102,10 +110,6 @@
     <div class="returned-definition-container">
 
         <h1 class="word-title"></h1>
-
-        <p class="word-origin">origin:<span class="origin-text"></span></p>
-
-        <p class="word-definition">definition:<span class="definition-text"></span></p>
     
     </div>
 
@@ -116,8 +120,6 @@
                     let requestURL = `https://api.dictionaryapi.dev/api/v2/entries/en/`
                     let word = document.querySelector('.word-output').value;
                         requestURL = requestURL + word;
-                        console.log('requestURL: ', requestURL);
-
                         async function getDefinitionJson() {
                             let request = new XMLHttpRequest();
                             await request.open(`GET`, requestURL);
@@ -131,17 +133,67 @@
                         getDefinitionJson();
                 }
                 getWord();
+                // clearWord();
             })
 
             function loadDefinition(definition) {
-                const word = definition[0].word
-                const origin = definition[0].origin;
-                const word_definition = definition[0].meanings[0].definitions[0].definition;
-                    console.log(word_definition);
-                
-                document.querySelector('.word-title').textContent = word;
-                document.querySelector('.origin-text').textContent = '  ' + origin;
-                document.querySelector('.definition-text').textContent = "  " + word_definition;
+                const word = definition[0].word;
+                const originTitle = definition[0].origin;
+                const definitionsArray = definition[0].meanings[0].definitions;
+                const originInformation = definition[0].origin;
+                loadHeadingAndOriginTitle(word, originTitle);
+                loadOriginInformation(originInformation)
+                loadDefinitionArray(definitionsArray);
+            }
+
+            function loadHeadingAndOriginTitle(word, originTitle) {
+
+                        document.querySelector('.word-title').textContent = word;
+
+                        const originTitleText = document.createElement('div');
+                        originTitleText.classList.add('origin-para');
+                        originTitleText.textContent = "Origin:"
+                        document.querySelector('.returned-definition-container').appendChild(originTitleText);
+            }
+            
+            function loadOriginInformation(originInformation) {
+                const originElement = document.createElement('div');
+                    originElement.classList.add('origin-information');
+                    originElement.textContent = originInformation;
+                    document.querySelector('.returned-definition-container').appendChild(originElement);
+            }
+
+            function loadDefinitionArray(definitionsArray) {
+
+                for (i = 0; i < definitionsArray.length; i++) {
+                        console.log(definitionsArray[i].definition)
+                    function addDefinition() {
+
+                        const main_container = document.querySelector('.returned-definition-container');
+
+                        let container = document.createElement('div');
+                            container.classList.add ('para-container');
+                            main_container.appendChild(container);
+
+                        const para_container = document.querySelector('.para-container');
+
+                        let bold_para = document.createElement('div');
+                            bold_para.classList.add('bold-para');
+                            bold_para.textContent = "Definition:";
+
+                        let para = document.createElement('div');
+                            para.classList.add("para-paragraph");
+                            para.textContent = definitionsArray[i].definition;
+
+                        para_container.appendChild(bold_para);
+                        para_container.appendChild(para);
+                    }
+                    addDefinition()
+                }
+            }
+
+            function clearWord() {
+                document.querySelector('.word-output').value = "";
             }
 
     </script>
